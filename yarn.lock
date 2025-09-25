@@ -2651,7 +2651,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-import@npm:^2.31.0":
+"eslint-plugin-import@npm:^2.31.0, eslint-plugin-import@npm:^2.32.0":
   version: 2.32.0
   resolution: "eslint-plugin-import@npm:2.32.0"
   dependencies:
@@ -3016,6 +3016,7 @@ __metadata:
     dotenv-cli: "npm:^10.0.0"
     eslint: "npm:^9"
     eslint-config-next: "npm:15.5.3"
+    eslint-plugin-import: "npm:^2.32.0"
     lucide-react: "npm:^0.544.0"
     next: "npm:15.5.3"
     prisma: "npm:^6.16.2"

@@ -1,7 +1,9 @@
-import { Button } from "@/components/ui/button";
-import { MobileDropdownMenu } from "./DropdownMenu";
 import Image from "next/image";
 import Link from "next/link";
+
+import { Button } from "@/components/ui/button";
+
+import { MobileDropdownMenu } from "./DropdownMenu";
 
 const menuItemsList = [
   { label: "Menu", href: "#menu", icon: "/menu.svg" },

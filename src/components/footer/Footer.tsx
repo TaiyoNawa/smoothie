@@ -1,15 +1,16 @@
 "use client";
 
+import Image from "next/image";
+import Link from "next/link";
 import { FC } from "react";
-import { Button } from "@/components/ui/button";
+
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import Image from "next/image";
-import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 // フッターメニューの型定義
 interface FooterMenuItem {
