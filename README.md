@@ -1,36 +1,84 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# スムージー EC サイトの制作プロジェクト
 
-## Getting Started
+##　現状の注意点を以下に示します。
 
-First, run the development server:
+- とりあえず、DB(supabase)に関しては、開発環境と本番環境をまだ分けてないです。本番環境が必要になったら、以下のいずれかの対処を行なってください
+  - Supabase のサイト上で、別プロジェクトを作成し、そちらを本番環境として使う。(容量などは共有なので、リソース制限に注意が必要)
+  - 現在のものを本番環境として、開発環境を分ける
+    - Supabase 公式のローカル DB を構築して、それを開発環境とする。`supabase start`とか。docker 使うので設定が少し面倒そう。
+    - Postgres を自分の PC に直接インストールして、Prisma の DATABASE_URL をそこに向ける。GUI ツールとして Sequel Ace で接続する。
+- また、本番環境時に必要なことをまとめておきます。
+  - Vercel 上では、環境変数 `DATABASE_URL` のポート番号が 6543 であることを確認してください。
+    - ※もしかしたら、それでだと下記の自動マイグレーションができないかもしれないので、またその時は手動でマイグレーションするかポート番号の変更が必要。
+  - デプロイ時に自動で migration をしてくれるように`package.json` の `scripts` セクションに以下を追加します:
+    ```json
+    {
+      "scripts": {
+        "postinstall": "prisma generate",
+        "vercel-build": "prisma migrate deploy"
+      }
+    }
+    ```
+    👉 こうすると、GitHub に push → Vercel が build → 本番 Supabase に自動で migrate が流れる。
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## DB 接続 URL の使い分け
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### DB の操作関連の URL(本番でも開発でも)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **URL**：`DATABASE_URL`
+- **ポート**：6543（pgBouncer 経由：多重接続に強い）
+- **操作**：単純な読み書きなど
+- **例**：Next.js API Route で Prisma Client を使う
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### マイグレーション / スキーマ変更
 
-## Learn More
+- **URL**：`DIRECT_URL`
+- **ポート**：5432（Direct Connection：DB に直接接続）
+- **操作**：`yarn db:migrate:dev` / `yarn db:push` / `yarn db:studio`
 
-To learn more about Next.js, take a look at the following resources:
+#### マイグレーションの手順
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. 必要に応じて開発中は `DATABASE_URL` を 5432 に一時変更して `yarn db:migrate:dev` などを実行
+2. マイグレーション完了後、`DATABASE_URL` を 6543（pgBouncer 用）に戻す  
+   ※マイグレーション後に戻しても、DB 操作やマイグレーションには影響なし
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 本番デプロイ
 
-## Deploy on Vercel
+- **URL**：Vercel 等に登録した本番用環境変数（`DIRECT_URL`）
+- **コマンド**：`yarn db:migrate:deploy`
+- **ポイント**：既存マイグレーションを本番 DB に安全に適用
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## DB 操作用のコマンド詳細
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 開発中
+
+- `yarn db:migrate:dev --name <message>`  
+  モデル変更を反映 & マイグレーションファイル生成（開発専用）
+  - ⚠️ マイグレーション時は環境変数の`DATABASE_URL`のポート番号を 5432 に、それ以外時は 6543 にする ⚠️
+    - 直接接続（5432）は DB にフルアクセスでき、スキーマ変更やマイグレーションが可能。
+    - コネクションプール（6543）は同時接続数を効率化しますが、DDL（テーブル定義変更など）は制限される場合がある。
+- `yarn db:push`  
+  スキーマを即座に反映（履歴なし、本番禁止）
+
+- `yarn db:studio`  
+  ブラウザで DB を操作
+  → これで DB の操作が可能に。
+
+---
+
+### 本番 / CI
+
+- `yarn db:migrate:deploy`  
+  既存マイグレーションを本番 DB に適用（安全）←vercel で自動でやるので、あまり気にしなくて良いと思う。
+
+  ※ちなみに、開発環境で `yarn db:migrate:deploy` を実行した場合は、  
+  `.env.local` の `DIRECT_URL` に従って接続されます。  
+  接続先は dev と同じ（`DIRECT_URL` で指定された DB）です。
+  違いは以下の通りです：
+
+  - `migrate dev` は新しいマイグレーションファイルを生成しつつ適用します。
+  - `migrate deploy` は既存マイグレーションを順番に適用するだけです。
+    つまり、開発環境でも `deploy` を使えますが、マイグレーションファイルの作成はできないので注意してください。
+
+- `yarn prisma:generate`  
+  Prisma Client を再生成
