@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 import { MobileDropdownMenu } from "./DropdownMenu";
+import { LangageSwitcher } from "./LangageSwitcher";
 
 const menuItemsList = [
   { label: "Menu", href: "#menu", icon: "/menu.svg" },
@@ -13,7 +14,7 @@ const menuItemsList = [
 
 export const Header = () => {
   return (
-    <header className="w-full h-[60px] bg-black px-4 md:px-8 flex items-center justify-between">
+    <header className="w-full h-[60px] bg-black px-4 md:px-8 flex items-center justify-between shadow-lg md:shadow-xl shadow-white/30">
       {/* Logo and Brand Name */}
       <div className="flex items-center space-x-3">
         <Image
@@ -68,6 +69,7 @@ export const Header = () => {
               priority
             />
           </Button>
+          <LangageSwitcher locale="ja" href="/about" />
         </div>
       </nav>
 

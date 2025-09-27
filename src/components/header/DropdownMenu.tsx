@@ -42,7 +42,7 @@ export const MobileDropdownMenu = ({
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="end"
-        className="w-48 bg-black border-gray-700"
+        className="w-32 bg-black border-gray-700"
       >
         {menuItems.map((item, index) => (
           <DropdownMenuItem

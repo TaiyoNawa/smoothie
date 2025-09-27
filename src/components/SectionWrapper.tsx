@@ -2,19 +2,20 @@ import { FC, ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 
-// レスポンシブパディングの定数定義
+// レスポンシブパディングの定数定義（現代的なタイトスペーシング）
 export const SECTION_WRAPPER_PADDING = {
-  base: "py-8", // 32px (8 * 4px)
-  md: "md:py-10", // 40px (10 * 4px)
-  lg: "lg:py-13", // 52px (13 * 4px)
+  base: "py-6", // 24px - モバイルでタイト
+  md: "md:py-8", // 32px - タブレットで適度
+  lg: "lg:py-10", // 40px - デスクトップで余裕
 };
 
-// 最大幅の定数定義（再利用性向上のため）
+// 最大幅の定数定義（モダンなワイドレイアウト）
 export const SECTION_WRAPPER_MAX_WIDTH = {
-  base: "w-[87%]", // モバイル: 87%
-  sm: "sm:max-w-[366px]", // スモール: 366px
-  md: "md:max-w-[692px]", // ミディアム: 692px
-  lg: "lg:max-w-[980px]", // ラージ: 980px
+  base: "w-[92%]", // モバイル: 92% - より広く
+  sm: "sm:w-[90%]", // スモール: 90%
+  md: "md:max-w-4xl", // ミディアム: 896px (56rem)
+  lg: "lg:max-w-6xl", // ラージ: 1152px (72rem)
+  xl: "xl:max-w-7xl", // エクストララージ: 1280px (80rem)
 };
 
 interface SectionWrapperProps {
@@ -55,15 +56,15 @@ export const SectionWrapper: FC<SectionWrapperProps> = ({
           paddingTop && `pt-[${paddingTop}]`,
           paddingBottom && `pb-[${paddingBottom}]`,
           // レスポンシブ対応のためのデフォルトクラスも追加
-          !paddingTop && "pt-8 md:pt-10 lg:pt-13",
-          !paddingBottom && "pb-8 md:pb-10 lg:pb-13"
+          !paddingTop && "pt-6 md:pt-8 lg:pt-10",
+          !paddingBottom && "pb-6 md:pb-8 lg:pb-10"
         )
       : defaultPaddingClasses;
 
   // 最大幅のクラスを生成
   const maxWidthClasses =
     maxWidth ||
-    `w-full ${SECTION_WRAPPER_MAX_WIDTH.base} ${SECTION_WRAPPER_MAX_WIDTH.sm} ${SECTION_WRAPPER_MAX_WIDTH.md} ${SECTION_WRAPPER_MAX_WIDTH.lg}`;
+    `w-full ${SECTION_WRAPPER_MAX_WIDTH.base} ${SECTION_WRAPPER_MAX_WIDTH.sm} ${SECTION_WRAPPER_MAX_WIDTH.md} ${SECTION_WRAPPER_MAX_WIDTH.lg} ${SECTION_WRAPPER_MAX_WIDTH.xl}`;
 
   return (
     <Component

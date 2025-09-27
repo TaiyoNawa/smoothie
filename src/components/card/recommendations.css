@@ -1,0 +1,21 @@
+/* Swiper カスタムページネーション */
+.swiper-pagination-bullet.bland-bullet {
+  width: 8px;
+  height: 8px;
+  background: rgb(252, 211, 62);
+  opacity: 0.3;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.swiper-pagination-bullet.bland-bullet.swiper-pagination-bullet-active.bland-bullet-active {
+  opacity: 1;
+  background: rgb(252, 211, 62);
+}
+
+@media (min-width: 768px) {
+  .swiper-pagination-bullet.bland-bullet {
+    width: 12px;
+    height: 12px;
+  }
+}
